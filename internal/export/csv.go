@@ -100,7 +100,7 @@ func (e *Export) csvHeader(items []string) []byte {
 	itemCopy := make([]string, 0, len(items))
 	for _, item := range items {
 		item = strings.ReplaceAll(item, " ", "_")
-		item = strings.ReplaceAll(item, " ", "/")
+		item = strings.ReplaceAll(item, "/", "_")
 		itemCopy = append(itemCopy, item)
 	}
 
