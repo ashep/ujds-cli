@@ -1,3 +1,5 @@
 /.ci
-/config.yaml
+/build
 /vendor
+/config.yaml
+/out.*

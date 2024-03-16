@@ -22,7 +22,6 @@ func newExport(cli *ujdscli.Client, l zerolog.Logger) *cobra.Command {
 	var (
 		indices   *[]string
 		filename  *string
-		format    *string
 		overwrite *bool
 	)
 
@@ -30,16 +29,16 @@ func newExport(cli *ujdscli.Client, l zerolog.Logger) *cobra.Command {
 		Use:   "export",
 		Short: "export data",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return export.New(cli, l).Export(cmd.Context(), *indices, *filename, *format, *overwrite)
+			return export.New(cli, l).Export(cmd.Context(), *indices, *filename, *overwrite)
 		},
 	}
 
 	indices = c.Flags().StringSliceP("index", "i", nil, "index name patterns to scan")
-	filename = c.Flags().StringP("out", "o", "out.{FORMAT}", "output path")
-	format = c.Flags().StringP("format", "f", "csv", "output format")
+	filename = c.Flags().StringP("out", "o", "", "output file path")
 	overwrite = c.Flags().Bool("overwrite", false, "overwrite exiting file")
 
 	_ = c.MarkFlagRequired("index")
+	_ = c.MarkFlagRequired("out")
 
 	return c
 }

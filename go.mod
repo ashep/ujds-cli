@@ -1,17 +1,17 @@
 module github.com/ashep/ujds-cli
 
-go 1.22.0
+go 1.22.1
 
 require (
 	github.com/ashep/go-apprun v0.0.0-20231108225123-255d4c93301e
 	github.com/ashep/ujds v0.0.0-20240309081037-a58078d668f0
+	github.com/bufbuild/connect-go v1.5.2
 	github.com/rs/zerolog v1.30.0
 	github.com/spf13/cobra v1.8.0
 )
 
 require (
 	github.com/ashep/go-cfgloader v0.0.0-20230619185109-520db9a7c8a8 // indirect
-	github.com/bufbuild/connect-go v1.5.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
