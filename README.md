@@ -2,14 +2,14 @@
 
 ## Configuration
 
-Copy `config.sample.yaml` to `config.yaml` and set `host` and `api_key` values.
+Copy `config.sample.yaml` to `config.yaml` and set `host` and `token` values.
 
 ## Getting help
 
 You can get a list of available command flags with their descriptions using the `help` command, for example:
 
 ```shell
-ujds-cli help export
+ujds help export
 ```
 
 ## `index` command
@@ -32,13 +32,13 @@ List indices. Available flags:
 To get all index names:
 
 ```shell
-ujds-cli index list
+ujds index list
 ```
 
 To get index names and titles, that have `book` word in the name:
 
 ```shell
-ujds-cli index list -f '{name}: {title}' -n *book*
+ujds index list -f '{name}: {title}' -n *book*
 ```
 
 ## `export` command
@@ -57,7 +57,7 @@ To export records from indices having prefix `books.2023.`, and the index named 
 the `books.csv` file, overwriting an existing one:
 
 ```shell
-ujds-cli export --overwrite -i books.2023.*,books.2024.fivestars -o books.csv
+ujds export --overwrite -i books.2023.*,books.2024.fivestars -o books.csv
 ```
 
 ## Debugging
@@ -65,7 +65,7 @@ ujds-cli export --overwrite -i books.2023.*,books.2024.fivestars -o books.csv
 User `APP_DEBUG` environment variable to get verbose logging:
 
 ```shell
-APP_DEBUG=1 ujds-cli ...
+APP_DEBUG=1 ujds ...
 ```
 
 ## Changelog
