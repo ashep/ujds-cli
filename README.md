@@ -1,8 +1,19 @@
 # UJDS Command Line Interface
 
+## Installation
+
+Using pre-compiled binaries: https://github.com/ashep/ujds-cli/releases.
+
+Using Go:
+
+```shell
+go install -v github.com/ashep/ujds-cli@latest
+```
+
 ## Configuration
 
-Copy `config.sample.yaml` to `config.yaml` and set `host` and `token` values.
+Copy `config.sample.yaml` to `config.yaml` into the directory you are running the command from and set `host`
+and `token` values.
 
 ## Getting help
 
