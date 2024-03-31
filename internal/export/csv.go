@@ -93,6 +93,17 @@ func (e *Export) allKeys(in []*jsontree.Tree) []string {
 		return strings.Count(a, ".") - strings.Count(b, ".")
 	})
 
+	// Move metadata to the beginning
+	slices.SortStableFunc(res, func(a, b string) int {
+		if strings.HasPrefix(a, "@") && !strings.HasPrefix(b, "@") {
+			return -1
+		} else if !strings.HasPrefix(a, "@") && strings.HasPrefix(b, "@") {
+			return 1
+		}
+
+		return 0
+	})
+
 	return res
 }
 

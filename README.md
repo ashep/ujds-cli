@@ -70,6 +70,10 @@ APP_DEBUG=1 ujds-cli ...
 
 ## Changelog
 
+### 0.3 (2024-03-31)
+
+Record metadata added to the `export` command output.
+
 ### 0.2 (2024-03-31)
 
 - The `index list` command added.
