@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"strings"
 
 	ujdscli "github.com/ashep/ujds/sdk/client"
@@ -15,8 +14,7 @@ import (
 )
 
 const (
-	formatJSON = "json"
-	formatCSV  = "csv"
+	formatCSV = "csv"
 )
 
 type Export struct {
@@ -76,34 +74,20 @@ func (e *Export) Export(ctx context.Context, idxPatterns []string, filename stri
 }
 
 func (e *Export) getIndexList(ctx context.Context, patterns []string) ([]string, error) {
-	rePatterns := make([]*regexp.Regexp, len(patterns))
-	for i, pat := range patterns {
-		pat = strings.ReplaceAll(pat, ".", "\\.")
-		pat = strings.ReplaceAll(pat, "*", ".*")
-
-		re, err := regexp.Compile("^" + pat + "$")
-		if err != nil {
-			return nil, fmt.Errorf("invalid index name pattern: %w", err)
-		}
-		rePatterns[i] = re
-	}
-
 	res := make([]string, 0)
 
-	cRes, err := e.cli.I.List(ctx, connect.NewRequest(&indexproto.ListRequest{}))
+	cRes, err := e.cli.I.List(ctx, connect.NewRequest(&indexproto.ListRequest{
+		Filter: &indexproto.ListRequestFilter{
+			Names: patterns,
+		},
+	}))
+
 	if err != nil {
-		return nil, fmt.Errorf("ujds: %w", err)
+		return nil, fmt.Errorf("ujds response: %w", err)
 	}
 
 	for _, cr := range cRes.Msg.GetIndices() {
-		name := cr.GetName()
-
-		for _, re := range rePatterns {
-			if re.MatchString(name) {
-				res = append(res, name)
-				break
-			}
-		}
+		res = append(res, cr.GetName())
 	}
 
 	return res, nil
