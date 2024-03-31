@@ -2,11 +2,14 @@ package export
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"time"
 
 	recordproto "github.com/ashep/ujds/sdk/proto/ujds/record/v1"
 	"github.com/bufbuild/connect-go"
@@ -40,9 +43,14 @@ func (e *Export) fetchRecordsToFile(ctx context.Context, indices []string, filen
 			}
 
 			for _, rec := range res.Msg.GetRecords() {
-				if _, err := fd.WriteString(rec.GetData() + "\n"); err != nil {
+				// id, created_at, updated_at, touched_at, data
+				out := fmt.Sprintf("%s\x1e%d\x1e%d\x1e%d\x1e%s",
+					rec.GetId(), rec.GetCreatedAt(), rec.GetCreatedAt(), rec.GetTouchedAt(), rec.GetData())
+
+				if _, err := fd.WriteString(out + "\n"); err != nil {
 					return fmt.Errorf("write to %s: %w", filename, err)
 				}
+
 				count++
 			}
 
@@ -82,14 +90,43 @@ func (e *Export) readRecordsFromFile(filename string) ([]*jsontree.Tree, error) 
 			return nil, fmt.Errorf("read line %d: %w", i, err)
 		}
 
-		tree, err := jsontree.FromBytes(b)
+		bs := bytes.Split(b, []byte{0x1e})
+		if len(bs) != 5 {
+			return nil, fmt.Errorf("wrong format at line: %d", i)
+		}
+
+		tree, err := jsontree.FromBytes(bs[4])
 		if err != nil {
-			e.l.Warn().Err(err).Msgf("parse data at line %d", i)
-			continue
+			return nil, fmt.Errorf("parse data at line: %d", i)
+		}
+
+		if err := tree.Set("@id", string(bs[0])); err != nil {
+			return nil, fmt.Errorf("set metadata at line %d: %w", i, err)
+		}
+
+		if err := tree.Set("@created_at", strTimestampToDatetime(bs[1])); err != nil {
+			return nil, fmt.Errorf("set metadata at line %d: %w", i, err)
+		}
+
+		if err := tree.Set("@updated_at", strTimestampToDatetime(bs[2])); err != nil {
+			return nil, fmt.Errorf("set metadata at line %d: %w", i, err)
+		}
+
+		if err := tree.Set("@touched_at", strTimestampToDatetime(bs[3])); err != nil {
+			return nil, fmt.Errorf("set metadata at line %d: %w", i, err)
 		}
 
 		res = append(res, tree)
 	}
 
 	return res, nil
+}
+
+func strTimestampToDatetime(ts []byte) string {
+	tsi, err := strconv.Atoi(string(ts))
+	if err != nil {
+		tsi = 0
+	}
+
+	return time.Unix(int64(tsi), 0).Format(time.DateTime)
 }

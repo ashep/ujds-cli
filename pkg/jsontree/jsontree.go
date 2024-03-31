@@ -25,6 +25,16 @@ func FromBytes(b []byte) (*Tree, error) {
 	return t, nil
 }
 
+func (t *Tree) MarshalJSON() ([]byte, error) {
+	if t.o != nil {
+		return json.Marshal(t.o)
+	} else if t.a != nil {
+		return json.Marshal(t.a)
+	}
+
+	return []byte("null"), nil
+}
+
 func (t *Tree) UnmarshalJSON(b []byte) error {
 	if err := json.Unmarshal(b, &t.o); err != nil {
 		if err := json.Unmarshal(b, &t.a); err != nil {
@@ -115,4 +125,65 @@ func (t *Tree) Get(q string) (any, error) {
 	}
 
 	return node, nil
+}
+
+func (t *Tree) Set(k string, v any) error {
+	if t.a == nil && t.o == nil {
+		if k != "" {
+			return ErrNotFound
+		}
+
+		switch vT := v.(type) {
+		case []any:
+			t.a = vT
+		case map[string]any:
+			t.o = vT
+		default:
+			return fmt.Errorf("invalid value: %T", vT)
+		}
+
+		return nil
+	}
+
+	ks := strings.Split(k, ".")
+	if len(ks) == 0 {
+		return errors.New("invalid key")
+	}
+
+	var node any
+	if t.a != nil {
+		node = t.a
+	} else {
+		node = t.o
+	}
+
+	fqk := ""
+	for ki, kName := range ks {
+		switch nodeT := node.(type) {
+		case []any:
+			return fmt.Errorf("%s is an array: not implemented", fqk)
+
+		case map[string]any:
+			if ki+1 == len(ks) { // edge node
+				nodeT[kName] = v
+				return nil
+			}
+
+			if _, ok := nodeT[kName]; !ok {
+				return ErrNotFound
+			}
+
+			node = nodeT[kName]
+
+		default:
+			return fmt.Errorf("%s is an edge %T-node and cannot have children", fqk, nodeT)
+		}
+
+		if ki > 0 {
+			fqk += "."
+		}
+		fqk += kName
+	}
+
+	return nil
 }
