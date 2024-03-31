@@ -1,6 +1,6 @@
 package app
 
 type Config struct {
-	Host   string `json:"host" yaml:"host"`
-	APIKey string `json:"api_key" yaml:"api_key"`
+	Host  string `json:"host" yaml:"host"`
+	Token string `json:"token" yaml:"token"`
 }

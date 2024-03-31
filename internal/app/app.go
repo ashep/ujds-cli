@@ -16,7 +16,7 @@ type App struct {
 
 func New(cfg Config, l zerolog.Logger) *App {
 	return &App{
-		rootCmd: command.New(ujdscli.New(cfg.Host, cfg.APIKey, nil), l),
+		rootCmd: command.New(ujdscli.New(cfg.Host, cfg.Token, nil), l),
 	}
 }
 

@@ -1,2 +1,2 @@
 host: "https://your.server.com"
-api_key: "theSuperSecretToken"
+token: "theSuperSecretToken"
