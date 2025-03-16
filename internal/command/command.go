@@ -14,6 +14,7 @@ func New(cli *ujdscli.Client, l zerolog.Logger) *cobra.Command {
 
 	root.AddCommand(newExport(cli, l))
 	root.AddCommand(newIndex(cli, l))
+	root.AddCommand(newRecord(cli))
 
 	return root
 }
