@@ -20,7 +20,7 @@ and `token` values.
 You can get a list of available command flags with their descriptions using the `help` command, for example:
 
 ```shell
-ujds help export
+ujds-cli help export
 ```
 
 ## `index` command
