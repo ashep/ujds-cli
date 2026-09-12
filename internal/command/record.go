@@ -2,6 +2,7 @@ package command
 
 import (
 	"github.com/ashep/ujds-cli/internal/record/find"
+	"github.com/ashep/ujds-cli/internal/record/get"
 	"github.com/ashep/ujds-cli/internal/record/history"
 	ujdscli "github.com/ashep/ujds/sdk/client"
 	"github.com/spf13/cobra"
@@ -14,6 +15,7 @@ func newRecord(cli *ujdscli.Client) *cobra.Command {
 		Short: "Record operations",
 	}
 
+	c.AddCommand(newRecordGet(cli))
 	c.AddCommand(newRecordFind(cli))
 	c.AddCommand(newRecordHistory(cli))
 
@@ -74,6 +76,29 @@ func newRecordHistory(cli *ujdscli.Client) *cobra.Command {
 	limit = c.Flags().Uint32P("limit", "l", 100, "Limit")
 	cursor = c.Flags().Uint64P("cursor", "c", 0, "Cursor")
 	format = c.Flags().StringP("format", "f", "ID: {{.ID}}\nTime: {{.TimeStr}}\nData: {{.Data}}\n\n", "Output format")
+
+	_ = c.MarkFlagRequired("index")
+
+	return c
+}
+
+func newRecordGet(cli *ujdscli.Client) *cobra.Command {
+	var (
+		index  *string
+		format *string
+	)
+
+	c := &cobra.Command{
+		Use:   "get <record_id>",
+		Short: "Get a record",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return get.New(cli).Get(cmd.Context(), *index, args[0], *format, cmd.OutOrStdout())
+		},
+	}
+
+	index = c.Flags().StringP("index", "i", "", "Index name")
+	format = c.Flags().StringP("format", "f", "ID: {{.Id}}\nCreated: {{.CreatedAt}}\nUpdated: {{.UpdatedAt}}\nTouched: {{.TouchedAt}}\nData:\n{{.DataTable}}", "Output format")
 
 	_ = c.MarkFlagRequired("index")
 
